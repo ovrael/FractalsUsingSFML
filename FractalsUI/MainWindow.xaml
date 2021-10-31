@@ -1,0 +1,62 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FractalsUI"
+        xmlns:Fractals="clr-namespace:Fractals"
+        xmlns:Text="clr-namespace:System.Text;assembly=System.Runtime" xmlns:Helpers="clr-namespace:Fractals.Helpers;assembly=Fractals" x:Class="FractalsUI.MainWindow"
+        mc:Ignorable="d"
+        Title="Settings" Height="500" Width="800" MinWidth="800" MinHeight="500" MaxWidth="800" MaxHeight="500" Closed="Window_Closed" ResizeMode="CanMinimize">
+
+
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="500"/>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="800"/>
+		</Grid.ColumnDefinitions>
+		<GroupBox x:Name="GraphicsWindowGB" Header="Graphics window" BorderThickness="3,3,3,3" HorizontalAlignment="Left" Width="210" Height="128" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Visibility="Visible" Margin="10,0,0,0">
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition/>
+					<RowDefinition/>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="7*"/>
+					<ColumnDefinition Width="11*"/>
+				</Grid.ColumnDefinitions>
+				<ComboBox x:Name='WindowRatioCB' ItemsSource="{Binding Source={local:EnumBindingSource {x:Type Helpers:VideoModeRatio}}}" SelectedIndex='1' HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="25" VerticalAlignment="Top" HorizontalAlignment="Center" Width="100" Grid.Column="1" Grid.Row="1" SelectionChanged="WindowRatioCB_SelectionChanged" Margin="0,11,0,0" />
+				<Slider x:Name="WindowSizeSlider" HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Height="25" AutoToolTipPlacement="None" Minimum="3" Maximum="9" TickPlacement="BottomRight" TickFrequency="1" Value="5" IsSnapToTickEnabled="True" Orientation="Horizontal" SmallChange="1" LargeChange="1" ToolTip="The window will have height of value * 10, smallest one 300 and the biggest 900" Interval="1" Grid.Column="1" ValueChanged="WindowSizeSlider_ValueChanged"/>
+				<Label Content="Size" HorizontalAlignment="Center" VerticalAlignment="Center" Width="59" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="41"/>
+				<Label Content="Ratio" HorizontalAlignment="Center" VerticalAlignment="Top" Width="59" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="43" Background="#00000000" Margin="0,3,0,0" Grid.Row="1"/>
+			</Grid>
+		</GroupBox>
+		<GroupBox x:Name="AnimatedJuliaGB" Header="Animated Julia Set" HorizontalAlignment="Left" Width="210" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="10,128,0,0" BorderThickness="3,3,3,3" Height="330" VerticalAlignment="Top">
+			<Grid x:Name="AnimatedJuliaGrid" Margin="0,3,0,0">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="7*"/>
+					<ColumnDefinition Width="11*"/>
+				</Grid.ColumnDefinitions>
+				<Label Content="Iterations" HorizontalAlignment="Center" VerticalAlignment="Top" Width="77" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="30" ToolTip="A number of iterations calculated to check if value goes to infinity"/>
+				<Label Content="Breakpoint" HorizontalAlignment="Center" VerticalAlignment="Top" Width="77" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="30" ToolTip="A number of iterations calculated to check if value goes to infinity" Margin="0,35,0,0"/>
+				<Label Content="Radius" HorizontalAlignment="Center" VerticalAlignment="Top" Width="77" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="30" ToolTip="A number of iterations calculated to check if value goes to infinity" Margin="0,70,0,0"/>
+				<Label Content="Angle" HorizontalAlignment="Center" VerticalAlignment="Top" Width="77" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="30" ToolTip="A number of iterations calculated to check if value goes to infinity" Margin="0,106,0,0"/>
+				<Label Content="Speed" HorizontalAlignment="Center" VerticalAlignment="Top" Width="77" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="30" ToolTip="A number of iterations calculated to check if value goes to infinity" Margin="0,141,0,0"/>
+				<Label x:Name="AnimatedJuliaRealPartText" Content="Real" HorizontalAlignment="Center" VerticalAlignment="Top" Width="77" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="30" ToolTip="A number of iterations calculated to check if value goes to infinity" Margin="0,208,0,0" IsEnabled="False"/>
+				<Label x:Name="AnimatedJuliaImaginaryPartText" Content="Imaginary" HorizontalAlignment="Center" VerticalAlignment="Top" Width="77" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="30" ToolTip="A number of iterations calculated to check if value goes to infinity" Margin="0,243,0,0" IsEnabled="False" Background="#00000000"/>
+				<Slider x:Name="AnimatedJuliaSpeedSlider" HorizontalAlignment="Left" Margin="0,141,0,0" VerticalAlignment="Top" Width="111" Height="30" AutoToolTipPlacement="None" Maximum="0.02" TickPlacement="BottomRight" TickFrequency="0.002" Orientation="Horizontal" ToolTip="The window will have height of value * 10, smallest one 300 and the biggest 900" Grid.Column="1" Value="0" LargeChange="0.5" ValueChanged="AnimatedJuliaSpeedSlider_ValueChanged"/>
+				<TextBox x:Name="AnimatedJuliaBreakpointInput" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Width="111" Grid.Column="1" Height="30" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" PreviewTextInput="PreviewTextInputInt" Margin="0,35,0,0" MaxLength="9" AcceptsReturn="True" MaxLines="1" BorderThickness="1,1,1,1" Text="7"/>
+				<TextBox x:Name="AnimatedJuliaRadiusInput" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Width="111" Grid.Column="1" Height="30" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" PreviewTextInput="PreviewTextInputDouble" Margin="0,70,0,0" MaxLength="9" AcceptsReturn="True" MaxLines="1" BorderThickness="1,1,1,1" Text="1"/>
+				<TextBox x:Name="AnimatedJuliaAngleInput" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Width="111" Grid.Column="1" Height="30" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" PreviewTextInput="PreviewTextInputDouble" Margin="0,106,0,0" MaxLength="9" AcceptsReturn="True" MaxLines="1" BorderThickness="1,1,1,1" Text="0"/>
+				<TextBox x:Name="AnimatedJuliaIterationsInput" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Width="111" Grid.Column="1" Height="30" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" PreviewTextInput="PreviewTextInputInt" MaxLength="9" AcceptsReturn="True" MaxLines="1" BorderThickness="1,1,1,1" Text="75"/>
+				<CheckBox x:Name="AnimatedJuliaCustomPartsCheck" Content="Custom part values" HorizontalAlignment="Left" Margin="36,176,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Height="30" Width="126" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" FlowDirection="RightToLeft" Grid.ColumnSpan="2" Checked="AnimatedJuliaCustomPartsCheck_Checked" Unchecked="AnimatedJuliaCustomPartsCheck_Unchecked"/>
+				<TextBox x:Name="AnimatedJuliaRealPartInput" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Width="111" Grid.Column="1" Height="30" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" PreviewTextInput="PreviewTextInputDouble" Margin="0,208,0,0" MaxLength="9" AcceptsReturn="True" MaxLines="1" BorderThickness="1,1,1,1" Text="1"/>
+				<TextBox x:Name="AnimatedJuliaImaginaryPartInput" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Width="111" Grid.Column="1" Height="30" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" PreviewTextInput="PreviewTextInputDouble" Margin="0,243,0,0" MaxLength="9" AcceptsReturn="True" MaxLines="1" BorderThickness="1,1,1,1" Text="1"/>
+			</Grid>
+		</GroupBox>
+		<Button x:Name="DrawBtn" Content="DRAW" Width="278" Height="173" Click="Draw_Click" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="90" Margin="371,226,0,0"/>
+	</Grid>
+
+</Window>
