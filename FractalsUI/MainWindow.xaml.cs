@@ -49,7 +49,7 @@ namespace FractalsUI
 
 		private void PreviewTextInputInt(object sender, TextCompositionEventArgs e)
 		{
-			string input = (sender as TextBox).Text;
+			string input = ((TextBox)sender).Text;
 			if (e.Text.Contains('-'))
 				input = e.Text + input;
 			else
@@ -60,7 +60,7 @@ namespace FractalsUI
 
 		private void PreviewTextInputDouble(object sender, TextCompositionEventArgs e)
 		{
-			string input = (sender as TextBox).Text;
+			string input = ((TextBox)sender).Text;
 			if (e.Text.Contains('-'))
 				input = e.Text + input;
 			else
@@ -69,7 +69,7 @@ namespace FractalsUI
 			e.Handled = !double.TryParse(input, out double x);
 		}
 
-		private AnimatedJuliaSet CreateAnimatedJulia()
+		private JuliaSet CreateAnimatedJulia()
 		{
 			bool error = false;
 			if (!int.TryParse(AnimatedJuliaIterationsInput.Text, out int maxIterations) && maxIterations >= 50 && maxIterations < 10000)
@@ -99,12 +99,12 @@ namespace FractalsUI
 			double speed = AnimatedJuliaSpeedSlider.Value;
 
 			if (!error)
-				return new AnimatedJuliaSet(windowManagement.Width, windowManagement.Height, maxIterations, breakpoint, (float)radius, (float)speed, (float)startAngle);
+				return new JuliaSet(windowManagement.Width, windowManagement.Height, maxIterations, breakpoint, (float)radius, (float)speed, (float)startAngle);
 			else
 				return null;
 		}
 
-		private void TryUpdateValuesAnimatedJulia(AnimatedJuliaSet animatedJuliaSet)
+		private void TryUpdateValuesAnimatedJulia(JuliaSet animatedJuliaSet)
 		{
 			animatedJuliaSet.Speed = (float)animationSpeed;
 
@@ -121,9 +121,23 @@ namespace FractalsUI
 				animatedJuliaSet.Angle = (float)angle;
 			else
 				AnimatedJuliaAngleInput.Text = string.Format("{0,8:F4}", animatedJuliaSet.Angle);
+
+
+			animatedJuliaSet.ColorMode = (ColorMode)ColorModeSelection.SelectedItem;
+
+			ColorData colorData = new ColorData();
+			colorData.Red = (byte)RedColorSlider.Value;
+			colorData.Blue = (byte)BlueColorSlider.Value;
+			colorData.Green = (byte)GreenColorSlider.Value;
+			colorData.Saturation = (byte)SaturationColorSlider.Value;
+			colorData.Value = (byte)ValueColorSlider.Value;
+
+			animatedJuliaSet.ColorData = colorData;
+
+
 		}
 
-		private void DrawAnimatedJulia(AnimatedJuliaSet animatedJuliaSet)
+		private void DrawAnimatedJulia(JuliaSet animatedJuliaSet)
 		{
 			while (windowManagement.RenderWindow.IsOpen)
 			{
@@ -182,12 +196,77 @@ namespace FractalsUI
 
 		private void WindowRatioCB_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			ratio = (VideoModeRatio)(sender as ComboBox).SelectedItem;
+			ratio = (VideoModeRatio)((ComboBox)sender).SelectedItem;
 		}
 
 		private void WindowSizeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
 		{
 			size = e.NewValue;
+		}
+
+		private void ColorSliders_ChangeLabels(object sender, RoutedPropertyChangedEventArgs<double> e)
+		{
+			RedColorLabel.Content = RedColorSlider.Value;
+			GreenColorLabel.Content = GreenColorSlider.Value;
+			BlueColorLabel.Content = BlueColorSlider.Value;
+			SaturationColorLabel.Content = SaturationColorSlider.Value;
+			ValueColorLabel.Content = ValueColorSlider.Value;
+			UpdateColorPicture(255);
+		}
+
+		private void UpdateColorPicture(byte alpha)
+		{
+			if (!SaturationColorSlider.IsEnabled)
+				ColorCanvas.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(alpha, (byte)RedColorSlider.Value, (byte)GreenColorSlider.Value, (byte)BlueColorSlider.Value));
+			else
+			{
+				Tools.HsvToRgb(120, SaturationColorSlider.Value / 255, ValueColorSlider.Value / 255, out int red, out int green, out int blue);
+				ColorCanvas.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(alpha, (byte)red, (byte)green, (byte)blue));
+			}
+		}
+
+		private void ColorModeSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			ColorMode colorMode = (ColorMode)((ComboBox)sender).SelectedItem;
+
+
+			if (colorMode == ColorMode.CustomRGB)
+			{
+				RedColorSlider.IsEnabled = true;
+				GreenColorSlider.IsEnabled = true;
+				BlueColorSlider.IsEnabled = true;
+				ColorCanvas.IsEnabled = true;
+
+				SaturationColorSlider.IsEnabled = false;
+				ValueColorSlider.IsEnabled = false;
+				UpdateColorPicture(255);
+			}
+			else if (colorMode == ColorMode.CustomHSV)
+			{
+				RedColorSlider.IsEnabled = false;
+				GreenColorSlider.IsEnabled = false;
+				BlueColorSlider.IsEnabled = false;
+				ColorCanvas.IsEnabled = false;
+
+				SaturationColorSlider.IsEnabled = true;
+				ValueColorSlider.IsEnabled = true;
+
+				UpdateColorPicture(255);
+			}
+			else
+			{
+				if (ColorCanvas != null)
+				{
+					ColorCanvas.IsEnabled = false;
+					UpdateColorPicture(120);
+				}
+				if (RedColorSlider != null) RedColorSlider.IsEnabled = false;
+				if (GreenColorSlider != null) GreenColorSlider.IsEnabled = false;
+				if (BlueColorSlider != null) BlueColorSlider.IsEnabled = false;
+
+				if (SaturationColorSlider != null) SaturationColorSlider.IsEnabled = false;
+				if (ValueColorSlider != null) ValueColorSlider.IsEnabled = false;
+			}
 		}
 	}
 }

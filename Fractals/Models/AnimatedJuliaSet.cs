@@ -3,21 +3,89 @@ using SFML.Graphics;
 
 namespace Fractals.Models
 {
-	public class AnimatedJuliaSet : Fractal
+	public class JuliaSet : Fractal
 	{
 		public int MaxIterations { get; set; }
 		public float Breakpoint { get; set; }
 		public float Radius { get; set; }
 		public float Speed { get; set; }
 		public float Angle { get; set; }
+		public ColorMode ColorMode { get; set; }
+		public ColorData ColorData { get; set; }
 
-		public AnimatedJuliaSet(int width, int height, int maxIterations, float breakpoint, float radius, float speed, float angle) : base(width, height)
+		public JuliaSet(int width, int height, int maxIterations, float breakpoint, float radius, float speed, float angle) : base(width, height)
 		{
 			MaxIterations = maxIterations;
 			Breakpoint = breakpoint;
 			Radius = radius;
 			Speed = speed;
-			Angle = Angle;
+			Angle = angle;
+			ColorMode = ColorMode.HSV;
+			ColorData = new ColorData();
+		}
+
+		private void UpdateVerticesColor(int breakIterations, int x, int y)
+		{
+			int red = 0;
+			int green = 0;
+			int blue = 0;
+
+			if (ColorMode.Equals(ColorMode.HSV) || ColorMode.Equals(ColorMode.CustomHSV))
+			{
+				double hu = 0;
+				if (breakIterations != MaxIterations)
+				{
+					hu = Math.Sqrt((double)breakIterations / MaxIterations);
+				}
+
+				hu = Tools.Map((float)hu, 0, 1, 0, 360);
+
+				// Tools.HsvToRgbTest(hu, 1, (double)150 / 255, out red, out green, out blue);
+				if (ColorMode.Equals(ColorMode.CustomHSV))
+					Tools.HsvToRgb(hu, (double)ColorData.Saturation / 255, (double)ColorData.Value / 255, out red, out green, out blue);
+				else
+					Tools.HsvToRgb(hu, 255d / 255, 150d / 255, out red, out green, out blue);
+			}
+			else
+			{
+				var bright = Tools.Map(breakIterations, 0, MaxIterations, 0, 1);
+				bright = Tools.Map((float)Math.Sqrt(bright), 0, 1, 0, 255);
+
+				if (breakIterations == MaxIterations)
+				{
+					bright = 0;
+				}
+
+				switch (ColorMode)
+				{
+					case ColorMode.Red:
+						red = (int)bright;
+						break;
+
+					case ColorMode.Green:
+						green = (int)bright;
+						break;
+
+					case ColorMode.Blue:
+						blue = (int)bright;
+						break;
+
+					case ColorMode.Gray:
+						red = (int)bright;
+						blue = (int)bright;
+						green = (int)bright;
+						break;
+
+					case ColorMode.CustomRGB:
+						red = (int)(bright * ColorData.Red / 255);
+						green = (int)(bright * ColorData.Green / 255);
+						blue = (int)(bright * ColorData.Blue / 255);
+						break;
+				}
+
+			}
+
+			Vertices[x, y].Color = new Color((byte)red, (byte)green, (byte)blue);
 		}
 
 		public void CalculateVertices(float realPart, float imaginaryPart)
@@ -48,11 +116,7 @@ namespace Fractals.Models
 						b = twoAB - imaginaryPart;
 					}
 
-					double hu = Math.Sqrt((double)n / MaxIterations);
-					hu = Tools.Map((float)hu, 0, 1, 0, 360);
-
-					Tools.HsvToRgbTest(hu, 1, (double)150 / 255, out int r, out int g, out int blue);
-					Vertices[x, y].Color = new Color((byte)r, (byte)g, (byte)blue);
+					UpdateVerticesColor(n, x, y);
 				}
 			}
 		}
@@ -82,30 +146,13 @@ namespace Fractals.Models
 						}
 
 						float zSquare = aSquare - bSquare;
-
-						// real : −0.8
-						// imaginary: +0.156
-
-						//float newZ = zSquare - 0.8f;
 						float newZ = zSquare + real;
+
 						a = newZ;
-						//b= twoAB + 0.156f;
 						b = twoAB - imaginary;
 					}
-					//var bright = Map(n, 0, maxIterations, 0, 1);
-					//bright = Map((float)Math.Sqrt(bright), 0, 1, 0, 255);
 
-					//if (n == maxIterations)
-					//{
-					//	bright = 0;
-					//}
-					//vertices[x, y].Color = new Color((byte)bright, (byte)bright, (byte)bright);
-
-					double hu = Math.Sqrt((double)n / MaxIterations);
-					hu = Tools.Map((float)hu, 0, 1, 0, 360);
-
-					Tools.HsvToRgbTest(hu, 1, (double)150 / 255, out int r, out int g, out int blue);
-					Vertices[x, y].Color = new Color((byte)r, (byte)g, (byte)blue);
+					UpdateVerticesColor(n, x, y);
 				}
 			}
 			Angle += Speed;

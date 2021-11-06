@@ -26,11 +26,10 @@ namespace Fractals.Helpers
 			return points;
 		}
 
-		public static void HsvToRgbTest(double h, double S, double V, out int r, out int g, out int b)
+		public static void HsvToRgb(double Hue, double S, double V, out int r, out int g, out int b)
 		{
-			double H = h;
-			while (H < 0) { H += 360; };
-			while (H >= 360) { H -= 360; };
+			while (Hue < 0) { Hue += 360; };
+			while (Hue >= 360) { Hue -= 360; };
 			double R, G, B;
 			if (V <= 0)
 			{ R = G = B = 0; }
@@ -40,7 +39,7 @@ namespace Fractals.Helpers
 			}
 			else
 			{
-				double hf = H / 60.0;
+				double hf = Hue / 60.0;
 				int i = (int)Math.Floor(hf);
 				double f = hf - i;
 				double pv = V * (1 - S);
